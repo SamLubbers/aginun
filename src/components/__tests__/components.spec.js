@@ -326,3 +326,39 @@ describe("IconLink", () => {
     expect(wrapper.find(`i.v-icon.${icon}`).exists()).toBeTruthy();
   });
 });
+
+import DefaultCard from "@/components/surfaces/DefaultCard";
+
+describe.only("DefaultCard", () => {
+  const localVue = createLocalVue();
+
+  let vuetify;
+  let slotNames = ["header", "title", "subtitle", "content", "meta", "action"];
+
+  beforeAll(() => {
+    vuetify = new Vuetify();
+  });
+
+  const mountFunction = options =>
+    mount(DefaultCard, { localVue, vuetify, ...options });
+
+  it("slot data is empty by default", () => {
+    const wrapper = mountFunction();
+    for (const slotName of slotNames) {
+      expect(wrapper.find(`#${slotName}`).text().length).toBe(0);
+    }
+  });
+
+  it("slot data is rendered", () => {
+    const slots = slotNames.reduce(
+      (slots, slotName) => ({ ...slots, [slotName]: slotName }),
+      {}
+    );
+    const wrapper = mountFunction({ slots });
+    for (const slotName of slotNames) {
+      expect(wrapper.find(`#${slotName}`).text()).toBe(slotName);
+    }
+  });
+
+  // input: attribtues (props), output: attributes rendered in v-card
+});
