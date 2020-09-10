@@ -18,7 +18,7 @@ describe("TheAppBar", () => {
     store = new Vuex.Store({
       modules: { styles: { state: stylesState }, namespaced: true },
     });
-    vuetify = new Vuetify({ theme: { dark: false } });
+    vuetify = new Vuetify();
   });
 
   const mountFunction = options =>
@@ -328,6 +328,10 @@ describe("IconLink", () => {
 });
 
 import DefaultCard from "@/components/surfaces/DefaultCard";
+import {
+  testSlotsAreEmpty,
+  testSlotsAreRendered,
+} from "@/utils/testUtilities.js";
 
 describe.only("DefaultCard", () => {
   const localVue = createLocalVue();
@@ -342,23 +346,45 @@ describe.only("DefaultCard", () => {
   const mountFunction = options =>
     mount(DefaultCard, { localVue, vuetify, ...options });
 
-  it("slot data is empty by default", () => {
-    const wrapper = mountFunction();
-    for (const slotName of slotNames) {
-      expect(wrapper.find(`#${slotName}`).text().length).toBe(0);
-    }
+  testSlotsAreEmpty(mountFunction, slotNames);
+  testSlotsAreRendered(mountFunction, slotNames);
+});
+
+import PageWithDrawer from "@/components/layout/PageWithDrawer";
+
+describe.only("PageWithDrawer", () => {
+  const localVue = createLocalVue();
+
+  let store;
+  let vuetify;
+  let slotNames = ["page-content", "drawer-header", "drawer-content"];
+
+  localVue.use(Vuex);
+
+  beforeAll(() => {
+    store = new Vuex.Store({
+      modules: { styles: { state: stylesState }, namespaced: true },
+    });
+    vuetify = new Vuetify({
+      breakpoint: {
+        smAndDown: false,
+      },
+    });
   });
 
-  it("slot data is rendered", () => {
-    const slots = slotNames.reduce(
-      (slots, slotName) => ({ ...slots, [slotName]: slotName }),
-      {}
-    );
-    const wrapper = mountFunction({ slots });
-    for (const slotName of slotNames) {
-      expect(wrapper.find(`#${slotName}`).text()).toBe(slotName);
-    }
-  });
+  const mountFunction = options =>
+    mount(PageWithDrawer, { localVue, store, vuetify, ...options });
 
-  // input: attribtues (props), output: attributes rendered in v-card
+  testSlotsAreEmpty(mountFunction, slotNames);
+  testSlotsAreRendered(mountFunction, slotNames);
+
+  // it("back button shows on mobile and does not show on desktop", () => {
+  //   const wrapper = mountFunction();
+  // });
+
+  // no slot content by default, also no button
+  // slot content is rendered
+  // smAndDown tests: button is rendered, container margin is added to the body
+  // IsDrawerOpen tests: active class & containerMargin
+  // something about drawer style, which is also rendered conditionally
 });

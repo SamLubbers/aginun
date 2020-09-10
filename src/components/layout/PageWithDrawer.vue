@@ -1,15 +1,32 @@
 <template>
   <div>
-    <div :style="containerMargin">
-      <slot />
+    <div id="page-content" :style="containerMargin">
+      <slot name="page-content" />
     </div>
-    <div class="drawer" :style="drawerStyle" :class="{ active: isDrawerOpen }">
-      <slot name="drawer" />
+    <div id="drawer" :style="drawerStyle" :class="{ active: isDrawerOpen }">
+      <div>
+        <div id="drawer-header">
+          <v-btn
+            v-if="this.$vuetify.breakpoint.smAndDown"
+            icon
+            @click="$emit('close-drawer', false)"
+          >
+            <v-icon color="primary">
+              mdi-arrow-left
+            </v-icon>
+          </v-btn>
+          <slot name="drawer-header" />
+        </div>
+        <div id="drawer-content">
+          <slot name="drawer-content" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 export default {
+  name: "PageWithDrawer",
   props: {
     isDrawerOpen: {
       type: Boolean,
@@ -43,7 +60,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.drawer {
+#drawer {
   position: fixed;
   top: 0;
   right: 0;
@@ -63,9 +80,16 @@ export default {
     background: white;
     border-color: rgba(0, 0, 0, 0.12);
   }
-  .theme--dark & {
-    background: #121212;
-    border-color: rgba(255, 255, 255, 0.12);
-  }
+}
+
+#drawer-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+}
+
+#drawer-content {
+  padding: 0.5rem;
 }
 </style>
